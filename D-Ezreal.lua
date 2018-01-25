@@ -26,9 +26,9 @@ function Ezreal:__init()
     self.R = Spell(_R, 3000) --
 
     self.Q:SetSkillShot(0.25, 2000, 60, true) --
-    self.W:SetSkillShot(0.25, 1600, 80, true) --
+    self.W:SetSkillShot(0.25, 1600, 80, false) --
     self.E:SetActive()
-    self.R:SetSkillShot(1.1, 2000, 160, true) --
+    self.R:SetSkillShot(1.1, 2000, 160, false) --
 
 
 	Callback.Add("Tick", function(...) self:OnTick(...) end)
@@ -37,6 +37,7 @@ function Ezreal:__init()
   Callback.Add("DrawMenu", function(...) self:OnDrawMenu(...) end)
     self:MenuValueDefault()
 		PrintChat("Ezreal Loaded. Good Luck!")
+		self.RRange =3000
 end
 
 function Ezreal:MenuValueDefault()
@@ -63,12 +64,14 @@ function Ezreal:MenuValueDefault()
 	self.jungle_q = self:MenuBool("Use Q Jungle", true)
 	self.jungle_mana= self:MenuSliderInt("Jungle Clear  Mana % >", 60)
 
+	self.RMaxRange = self:MenuSliderInt("Set the R Max Range", 3000)
 	self.useR = self:MenuKeyBinding("Semi-manual cast R key", 84)
 	self.tear = self:MenuBool("Stack Tear", true)
 	self.stackQmana = self:MenuSliderInt("Stuck Tear if MP% >", 60)
 	self.Wally = self:MenuBool("W on Ally To Push Tower", true)
 	self.KillstealQ = self:MenuBool("Use Q to killsteal", true)
 	self.KillstealW = self:MenuBool("Use W to killsteal", true)
+	self.KillstealR = self:MenuBool("Use R to killsteal", true)
 	self.ImmobileQ = self:MenuBool("Use Q in Immobile", true)
 	self.ImmobileW = self:MenuBool("Use W in Immobile", true)
 
@@ -107,12 +110,14 @@ function Ezreal:OnDrawMenu()
 			Menu_End()
 		end
 		if Menu_Begin("Misc Setting") then
+			self.RMaxRange = Menu_SliderInt("Set the R Max Range", self.RMaxRange, 2500, 6000, self.menu)
 			self.useR = Menu_KeyBinding("Semi-manual cast R key", self.useR, self.menu)
 			self.tear = Menu_Bool("Stack Tear", self.tear, self.menu)
 			self.stackQmana = Menu_SliderInt("Stack Tear if MP %", self.stackQmana, 0, 100, self.menu)
 			self.Wally = Menu_Bool("W on Ally To Push Tower", self.Wally, self.menu)
 			self.KillstealQ = Menu_Bool("Use Q to killsteal", self.KillstealQ, self.menu)
 			self.KillstealW = Menu_Bool("Use W to killsteal", self.KillstealW, self.menu)
+			self.KillstealR = Menu_Bool("Use R to killsteal", self.KillstealR, self.menu)
 			self.ImmobileQ = Menu_Bool("Use Q in Immobile", self.ImmobileQ, self.menu)
 			self.ImmobileW = Menu_Bool("Use W in Immobile", self.ImmobileW, self.menu)
 			Menu_End()
@@ -163,9 +168,17 @@ function Ezreal:OnTick()
 		SetLuaHarass(false)
 		SetLuaLaneClear(false)
 
-    local TargetR = self.menu_ts:GetTarget(self.RRange)
-    if GetKeyPress(self.useR) > 0 and IsValidTarget(TargetR, self.RRange) then
-    	CastSpellTarget(TargetR, _R)    end
+		self.R.range = self.RMaxRange
+		for i, heros in ipairs(GetEnemyHeroes()) do
+				if heros ~= nil  and CanCast(_R) then
+						local target = GetAIHero(heros)
+								if GetKeyPress(self.useR) > 0 and IsValidTarget(target.Addr, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
+										local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.R.delay, self.R.width, self.R.range, self.R.speed, myHero, false)
+												if HitChance >= 2 then
+													CastSpellToPos(CastPosition.x, CastPosition.z, _R)  end
+								 end
+				 end
+		end
 
 		if GetKeyPress(self.Combo) > 0		then
 			self:EzrealCombo()	end
@@ -295,12 +308,12 @@ function Ezreal:EzrealCombo()
 										    	if HitChance >= 2 then
 									       		CastSpellToPos(CastPosition.x, CastPosition.z, _R)  end
 									 end
-									 if self.ComboRAOEuse and IsValidTarget(target.Addr, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 400) == 0 then
+									 if self.ComboRAOEuse and IsValidTarget(target.Addr, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
 										 	local CastPosition, HitChance, Position = vpred:GetLineAOECastPosition(target, self.R.delay, self.R.width, self.R.range, self.R.speed, myHero, false)
 													if HitChance >= 2 then
 														CastSpellToPos(CastPosition.x, CastPosition.z, _R) end
 									 end
-									 if self.ComboRCC and IsValidTarget(target.Addr, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 400) == 0 then
+									 if self.ComboRCC and IsValidTarget(target.Addr, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
 										 			if self:IsImmobileTarget(target) then
 														CastSpellToPos(target.x, target.z, _R) end
 									 end
@@ -339,6 +352,7 @@ function Ezreal:KillSteal()
 				local target = GetAIHero(heros)
 		  	local qDmg = GetDamage("Q", target)
 		  	local wDmg = GetDamage("W", target)
+				local rDmg = GetDamage("R", target)
   	    	if CanCast(_Q) and target ~= 0 and IsValidTarget(target, self.Q.range) and self.KillstealQ then
 		      local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.Q.delay, self.Q.width, self.Q.range, self.Q.speed, myHero, true)
 		 	       if HitChance >= 2 and qDmg > target.HP then
@@ -351,6 +365,12 @@ function Ezreal:KillSteal()
 				        CastSpellToPos(CastPosition.x, CastPosition.z, _W)
 			      end
 			   end
+				 if self.KillstealR and rDmg * 0.8 > target.HP and IsValidTarget(target.Addr, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
+						local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.R.delay, self.R.width, self.R.range, self.R.speed, myHero, false)
+							if HitChance >= 2 then
+											CastSpellToPos(CastPosition.x, CastPosition.z, _R)
+						end
+				 end
 			end
 	end
 end
@@ -385,7 +405,7 @@ function Ezreal:OnDraw()
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.E.range, Lua_ARGB(255,0,255,0))
 		end
 		if self.Draw_R and self.R:IsReady() then
-			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.RRange, Lua_ARGB(255,255,0,0))
+			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.R.range, Lua_ARGB(255,255,0,0))
 		end
 	else
 		if self.Draw_Q then
@@ -398,7 +418,7 @@ function Ezreal:OnDraw()
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.E.range, Lua_ARGB(255,0,255,0))
 		end
 		if self.Draw_R then
-			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.RRange, Lua_ARGB(255,255,0,0))
+			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.R.range, Lua_ARGB(255,255,0,0))
 		end
 	end
 end
