@@ -225,7 +225,7 @@ function Ezreal:OnAfterAttack(unit, target)
 		end
 	end
 	local myHeroPos = Vector(myHero.x, myHero.y, myHero.z)
-	if self:IsUnderTurretEnemy(myHeroPos) and CanCast(_W) and self.Wally  and CountEnemiesInRange(myHeroPos, 1000) < 1 then
+	if self:IsUnderTurretEnemy(myHeroPos) and CanCast(_W) and self.Wally  and self.CountEnemiesInRange(myHeroPos, 1000) < 1 then
 		for i,hero in pairs(GetAllyHeroes()) do
 		 if hero ~= nil then
 			 ally = GetAIHero(hero)
