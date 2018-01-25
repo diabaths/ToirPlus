@@ -114,7 +114,7 @@ function Ezreal:OnDrawMenu()
 			self.KillstealQ = Menu_Bool("Use Q to killsteal", self.KillstealQ, self.menu)
 			self.KillstealW = Menu_Bool("Use W to killsteal", self.KillstealW, self.menu)
 			self.ImmobileQ = Menu_Bool("Use Q in Immobile", self.ImmobileQ, self.menu)
-			self.ImmobileW = Menu_Bool("Use Q in Immobile", self.ImmobileW, self.menu)
+			self.ImmobileW = Menu_Bool("Use W in Immobile", self.ImmobileW, self.menu)
 			Menu_End()
 		end
 		if Menu_Begin("Draw Spell") then
