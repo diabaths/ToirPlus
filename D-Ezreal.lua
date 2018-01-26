@@ -34,6 +34,7 @@ function Ezreal:__init()
 	Callback.Add("Tick", function(...) self:OnTick(...) end)
   Callback.Add("Draw", function(...) self:OnDraw(...) end)
 	Callback.Add("AfterAttack", function(...) self:OnAfterAttack(...) end)
+	Callback.Add("Attack", function(...) self:OnAttack(...) end)
   Callback.Add("DrawMenu", function(...) self:OnDrawMenu(...) end)
     self:MenuValueDefault()
 		PrintChat("Ezreal Loaded. Good Luck!")
@@ -164,9 +165,9 @@ end
 
 function Ezreal:OnTick()
 	if myHero.IsDead or IsTyping() or myHero.IsRecall or IsDodging() then return end
- 		SetLuaCombo(false)
-		SetLuaHarass(false)
-		SetLuaLaneClear(false)
+ 		SetLuaCombo(true)
+		SetLuaHarass(true)
+		SetLuaLaneClear(true)
 
 		self.R.range = self.RMaxRange
 		for i, heros in ipairs(GetEnemyHeroes()) do
@@ -206,8 +207,7 @@ function Ezreal:EnemyMinionsTbl()
     end
     return result
 end
-
-function Ezreal:OnAfterAttack(unit, target)
+function Ezreal:OnAttack(unit, target)
 	if GetKeyPress(self.Lane_Clear) > 0  then
 	local orbTarget = GetTargetOrb()
 		if orbTarget ~= nil and GetType(orbTarget) == 1 then
@@ -237,6 +237,8 @@ function Ezreal:OnAfterAttack(unit, target)
 			end
 		end
 	end
+end
+function Ezreal:OnAfterAttack(unit, target)
 	local myHeroPos = Vector(myHero.x, myHero.y, myHero.z)
 	if self:IsUnderTurretEnemy(myHeroPos) and CanCast(_W) and self.Wally  and self.CountEnemiesInRange(myHeroPos, 1000) < 1 then
 		for i,hero in pairs(GetAllyHeroes()) do
