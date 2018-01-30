@@ -227,7 +227,7 @@ function Rengar:OnTick()
 	if GetKeyPress(self.Jungle_Clear) > 0  then
 			self:Rengarjungle()
 		end
-		--self:OnImmobile()
+		self:OnImmobile()
 		self:KillSteal()
 		--self:DrawHeroInfo()
 	end
@@ -363,7 +363,7 @@ end
 	end
 	if self.combomode == 2 then
 	if (spell.Name == "RengarE" or spell.Name == "RengarEEmp") and GetKeyPress(self.Combo) > 0  then
-				if IsValidTarget(target, 600)  then				
+				if IsValidTarget(target, 600)  then
 				if CanCast(_W) and IsValidTarget(target, self.W.range) and self.combo_w then
 					CastSpellTarget(myHero.Addr, _W)
 				end
@@ -458,8 +458,24 @@ function Rengar:OnAfterAttack(unit, target)
 end
 
 function Rengar:RengarHarass()
-
-end
+	local Target = GetTargetSelector(1500, 1)
+	target = GetAIHero(Target)
+	if CanCast(_Q) and self.harass_q and IsValidTarget(target, self.Q.range) then
+		local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.Q.delay, self.Q.width, self.Q.range, self.Q.speed, myHero, false)
+				if HitChance >= 1 then
+					CastSpellToPos(CastPosition.x, CastPosition.z, _Q)
+			end
+		end
+		if CanCast(_W) and self.harass_w and IsValidTarget(target, self.W.range) then
+ 		 CastSpellTarget(myHero.Addr, _W)
+ 	 end
+	 if CanCast(_E) and self.harass_e and IsValidTarget(target, self.E.range) then
+		 local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.E.delay, self.E.width, self.E.range, self.E.speed, myHero, true)
+				 if HitChance >= 2 then
+					 CastSpellToPos(CastPosition.x, CastPosition.z, _E)
+				 end
+	 end
+ end
 
 function Rengar:CanMove(unit)
 	if (CountBuffByType(unit.Addr, 5) == 1 or CountBuffByType(unit.Addr, 21) == 1 or CountBuffByType(unit.Addr, 11) == 1 or CountBuffByType(unit.Addr, 29) == 1 or
@@ -489,7 +505,7 @@ function Rengar:RengarCombo()
 	if target ~=nil and IsValidTarget(target, 1500) then
 		if self.combomode ==2 then
 			if myHero.MP ~=4 then
-				if CanCast(_E) and self.combo_e and not self.passiveup then
+				if CanCast(_E) and self.combo_e and IsValidTarget(target, self.E.range) and not self.passiveup then
 					local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.E.delay, self.E.width, self.E.range, self.E.speed, myHero, true)
 							if HitChance >= 2 then
 								CastSpellToPos(CastPosition.x, CastPosition.z, _E)
@@ -583,19 +599,10 @@ function Rengar:RengarCombo()
 
 function Rengar:OnImmobile()
 	local enemy = self.menu_ts:GetTarget(self.Q.range)
-				if CanCast(Q)  and IsValidTarget(enemy, self.Q.range) then
-						if  self:IsImmobileTarget(enemy) and self.ImmobileQ then
-							local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.Q.delay, self.Q.width, self.Q.range, self.Q.speed, myHero, true)
-    					local distance = VPGetLineCastPosition(target.Addr, self.Q.delay, self.Q.speed)
-							if not GetCollision(target.Addr, self.Q.width, self.Q.range, distance, 1) then
-	    					CastSpellToPos(CastPosition.x, CastPosition.z, _Q)
-							end
-						end
-			 end
-			 if CanCast(W)  and IsValidTarget(enemy, self.W.range) then
-				 local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.W.delay, self.W.width, self.W.range, self.W.speed, myHero, true)
-				 			 if  self:IsImmobileTarget(enemy) and self.ImmobileW then
-						 	 CastSpellToPos(CastPosition.x, CastPosition.z, _W)
+			 if CanCast(E)  and IsValidTarget(enemy, self.E.range) then
+				 local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.E.delay, self.E.width, self.E.range, self.E.speed, myHero, true)
+				 			 if  self:IsImmobileTarget(enemy) and self.ImmobileE then
+						 	 CastSpellToPos(CastPosition.x, CastPosition.z, _E)
 					 end
 			end
 end
