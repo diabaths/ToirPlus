@@ -17,8 +17,7 @@ function Ezreal:__init()
 	vpred = VPrediction(true)
 
 	--TS
-    self.menu_ts = TargetSelector(1750, 0, myHero, true, true, true)
-
+    self.menu_ts = TargetSelector(1750, 1, myHero, true, true, true)
 
     self.Q = Spell(_Q, 1200) --
     self.W = Spell(_W, 1000) --
@@ -189,7 +188,7 @@ function Ezreal:OnTick()
 
 	  if   GetKeyPress(self.Combo) > 0 or  GetKeyPress(self.Harass) > 0 or  GetKeyPress(self.Lane_Clear) > 0 or  GetKeyPress(self.Jungle_Clear) > 0  then  return
 	 	else self:StuckTear()  	end
-
+		
 		self:OnImmobile()
 		self:KillSteal()
 
