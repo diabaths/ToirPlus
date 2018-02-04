@@ -664,7 +664,7 @@ function Rengar:OnDraw()
 		end
 	end
 
-	if self.menu_Draw_Already then
+	if self.Draw_When_Already then
 		if self.Draw_Q and self.Q.IsReady() then
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.Q.range, Lua_ARGB(255,255,0,0))
 		end

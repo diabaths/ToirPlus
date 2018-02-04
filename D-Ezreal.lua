@@ -188,7 +188,7 @@ function Ezreal:OnTick()
 
 	  if   GetKeyPress(self.Combo) > 0 or  GetKeyPress(self.Harass) > 0 or  GetKeyPress(self.Lane_Clear) > 0 or  GetKeyPress(self.Jungle_Clear) > 0  then  return
 	 	else self:StuckTear()  	end
-		
+
 		self:OnImmobile()
 		self:KillSteal()
 
@@ -395,7 +395,7 @@ function Ezreal:OnDraw()
 		end
 	end
 
-	if self.menu_Draw_Already then
+	if self.Draw_When_Already then
 		if self.Draw_Q and self.Q.IsReady() then
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.Q.range, Lua_ARGB(255,255,0,0))
 		end
