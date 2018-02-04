@@ -396,16 +396,16 @@ function Ezreal:OnDraw()
 	end
 
 	if self.Draw_When_Already then
-		if self.Draw_Q and self.Q.IsReady() then
+		if self.Draw_Q and CanCast(_Q) then
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.Q.range, Lua_ARGB(255,255,0,0))
 		end
-		if self.Draw_W and self.W:IsReady() then
+		if self.Draw_W and CanCast(_W) then
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.W.range, Lua_ARGB(255,255,0,0))
 		end
-		if self.Draw_E and self.E:IsReady() then
+		if self.Draw_E and CanCast(_E) then
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.E.range, Lua_ARGB(255,0,255,0))
 		end
-		if self.Draw_R and self.R:IsReady() then
+		if self.Draw_R and CanCast(_R) then
 			DrawCircleGame(myHero.x , myHero.y, myHero.z, self.R.range, Lua_ARGB(255,255,0,0))
 		end
 	else
