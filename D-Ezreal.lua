@@ -59,6 +59,7 @@ function Ezreal:MenuValueDefault()
 	self.harass_mana= self:MenuSliderInt("Harass  Mana % >", 60)
 
 	self.lane_q = self:MenuBool("Use Q to farm", false)
+	self.lane_q_enemy =self:MenuBool("Use Q to Poke", true)
   self.lane_mana= self:MenuSliderInt("Lane Clear  Mana % >", 60)
 
 	self.jungle_q = self:MenuBool("Use Q Jungle", true)
@@ -101,6 +102,7 @@ function Ezreal:OnDrawMenu()
 		end
 		if Menu_Begin("Lane Clear Setting") then
 			self.lane_q = Menu_Bool("Use Q to farm", self.lane_q, self.menu)
+			self.lane_q_enemy = Menu_Bool("Use Q to Poke", self.lane_q_enemy, self.menu)
 			self.lane_mana = Menu_SliderInt("Lane Clear  Mana % >", self.lane_mana, 1, 100, self.menu)
 			Menu_End()
 		end
@@ -189,9 +191,11 @@ function Ezreal:OnTick()
 		if GetKeyPress(self.Harass) > 0		then
 			self:EzrealHarass()	end
 
-	  if   GetKeyPress(self.Combo) > 0 or  GetKeyPress(self.Harass) > 0 or  GetKeyPress(self.Lane_Clear) > 0 or  GetKeyPress(self.Jungle_Clear) > 0  then  return
-	 	else self:StuckTear()  	end
+	  if GetKeyPress(self.Combo) <= 0 or GetKeyPress(self.Harass) <= 0 or GetKeyPress(self.Lane_Clear) <= 0 or GetKeyPress(self.Jungle_Clear) <= 0 then
+	 	self:StuckTear()
+	  	end
 
+		self:EzrealFarmQ()
 		self:OnImmobile()
 		self:KillSteal()
 
@@ -227,6 +231,33 @@ function Ezreal:GetRPrediction(target)
 	end
 	return nil , 0 , nil, 0
 end
+function Ezreal:EzrealFarmQ()
+	if CanCast(_Q) and self.lane_q and myHero.MP / myHero.MaxMP * 100 > self.lane_mana and GetKeyPress(self.Lane_Clear) > 0 then
+	for i, minion in pairs(EnemyMinionsTbl()) do
+		if IsValidTarget(minion, self.Q.range) then
+			local qdmg = GetDamage("Q", minion)
+			local Collision = CountObjectCollision(0, minion.Addr, myHero.x, myHero.z, minion.x, minion.z, self.Q.width, self.Q.range, 65)
+			if  minion.HP + 15 < qdmg and GetDistance(minion, myHero) > GetTrueAttackRange() then
+				if Collision == 0 and minion.HP + 15 < qdmg and GetDistance(minion, myHero) > GetTrueAttackRange() then
+							CastSpellToPos(minion.x, minion.z, _Q)
+							end
+						end
+					end
+				end
+	for i, heros in ipairs(GetEnemyHeroes()) do
+							if heros ~= nil  and CanCast(_Q) then
+									local target = GetAIHero(heros)
+									if IsValidTarget(target, self.Q.range) then
+										local CastPosition, HitChance, Position = self:GetQPrediction(target)
+										if HitChance >= 6  then											
+								 				CastSpellToPos(CastPosition.x, CastPosition.z, _Q)
+							 				end
+										end
+									end
+								end
+
+							end
+						end
 function Ezreal:EnemyMinionsTbl()
     GetAllUnitAroundAnObject(myHero.Addr, 2000)
     local result = {}
