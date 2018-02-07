@@ -249,7 +249,7 @@ function Ezreal:EzrealFarmQ()
 									local target = GetAIHero(heros)
 									if IsValidTarget(target, self.Q.range) then
 										local CastPosition, HitChance, Position = self:GetQPrediction(target)
-										if HitChance >= 6  then											
+										if HitChance >= 6  then
 								 				CastSpellToPos(CastPosition.x, CastPosition.z, _Q)
 							 				end
 										end
@@ -382,7 +382,7 @@ function Ezreal:EzrealCombo()
 					if heros ~= nil  and CanCast(_R) then
 							local target = GetAIHero(heros)
 							local rDmg = GetDamage("R", target)
-									if self.combo_r and rDmg * 0.8 > target.HP and IsValidTarget(target, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
+									if self.combo_r and rDmg * 0.8 > target.HP and IsValidTarget(target, self.R.range) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
 										local CastPosition, HitChance, Position = self:GetRPrediction(target)
 										if HitChance >= 6  then
 								 				CastSpellToPos(CastPosition.x, CastPosition.z, _R)
@@ -449,7 +449,7 @@ function Ezreal:KillSteal()
 								CastSpellToPos(CastPosition.x, CastPosition.z, _W)
 							end
 						end
-				 if self.KillstealR and rDmg * 0.8 > targetkill.HP and IsValidTarget(targetkill.Addr, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
+				 if CanCast(_R)  and self.KillstealR and rDmg * 0.8 > targetkill.HP and IsValidTarget(targetkill, self.R.range - 150) and CountEnemyChampAroundObject(myHero.Addr, 800) == 0 then
 					 local CastPosition, HitChance, Position = self:GetRPrediction(target)
 					 if HitChance >= 6  then
 							 CastSpellToPos(CastPosition.x, CastPosition.z, _R)
