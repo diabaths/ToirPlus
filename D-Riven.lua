@@ -274,11 +274,8 @@ function Riven:OnAnimation(unit, animationName)
 			end
 		end
 function Riven:Reset()
-			--SetLuaMoveOnly(true)
-			--DelayAction(function() MoveToPos(GetMousePos().x, GetMousePos().z) end, 0.1)
 			MoveToPos(GetMousePos().x, GetMousePos().z)
-			--MoveToPos(target.x, target.z)
-			self.JustReset = GetTimeGame()			
+			self.JustReset = GetTimeGame()
 	end
 
 
@@ -321,19 +318,14 @@ function Riven:ProcessNormal(unit, spell)
 				DelayAction(function() self:CastQ() end, 0.21)
 			end
 		end
-		if  spell.Name == "RivenTriCleave" then
-		 __PrintTextGame("QQQQ")
-	 end
 	 if spell.Name == "ItemTiamatCleave" then
-		  __PrintTextGame("tiamat")
-			if CanCast(_Q)  and self.combo_q then
+		 if CanCast(_Q)  and self.combo_q then
 				self:CastQ()
 			end
 		end
 		if spell.Name == "RivenMartyr" then
 			if CanCast(_Q) and self.combo_q then
 				self:CastQ()
-				 __PrintTextGame("WWWW")
 			end
 			 self:UseItems()
 			if self.combo_r and self.IsR2() and CanCast(_R) then
@@ -386,8 +378,7 @@ function Riven:ProcessShy(unit, spell)
 	if unit.IsMe then
 		if spell.Name:lower():find("attack") then
 			 self:UseItems()
-			 __PrintTextGame("tiamat")
-		 end
+			end
 		 if spell.Name == "RivenFeint" then
 			 if CanCast(_R) and self.IsR1() then
 			 	CastSpellTarget(myHero.Addr, _R)
@@ -777,9 +768,9 @@ function Riven:KillSteal()
 			if self.combomode == 0 then
 				DrawTextD3DX(a, b, "Normal", Lua_ARGB(255, 255, 132, 0))
 			elseif self.combomode == 1 then
-				DrawTextD3DX(a, b, "Werhli(all in)", Lua_ARGB(255, 0, 255, 10))
+				DrawTextD3DX(a, b, "Werhli (All in)", Lua_ARGB(255, 0, 255, 10))
 		  elseif self.combomode == 2 then
-				DrawTextD3DX(a, b, "Shy", Lua_ARGB(255, 132, 0, 10))
+				DrawTextD3DX(a, b, "Shy (All In)", Lua_ARGB(255, 132, 0, 10))
 			end
 		end
 
