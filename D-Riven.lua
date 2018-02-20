@@ -39,6 +39,7 @@ function Riven:__init()
 		Callback.Add("ProcessSpell", function(...) self:OnProcessSpell(...) end)
 		Callback.Add("PlayAnimation", function(...) self:OnAnimation(...) end)
 		Callback.Add("AfterAttack", function(...) self:OnAfterAttack(...) end)
+		Callback.Add("UpdateBuff", function(...) self:OnUpdateBuff(...) end)
 		self:MenuValueDefault()
 		PrintChat("Riven Loaded. Good Luck!")
 
@@ -103,6 +104,7 @@ function Riven:MenuValueDefault()
 	self.justauto = 0
 	self.NowuseQ = nil
 	self.Qstucks = 0
+	self.RLastTick = 0
 
 end
 
@@ -241,8 +243,14 @@ function Riven:OnTick()
 			if GetTimeGame() - self.lastQ > 0.6 and self.Qstucks == 3 then
 				self.Qstucks = 0
 			end
+end
 
-
+function Riven:OnUpdateBuff(unit,buff,stacks)
+	if unit.IsMe then
+		if buff.Name == "rivenwindslashready" then
+    self.RLastTick = GetTimeGame()
+end
+	end
 end
 function Riven:Rivenforest()
 	MoveToPos(GetMousePos().x, GetMousePos().z)
@@ -604,10 +612,7 @@ function Riven:CastR2()
 	target = GetAIHero(Target)
 	local rDmg = GetDamage("R", target)
 	local aadmg = GetAADamageHitEnemy(target)
-	local Timestart = GetBuffTimeBegin(myHero, "RivenFengShuiEngine")
-	local Timeend = GetBuffTimeEnd  (myHero, "RivenFengShuiEngine")
-	--__PrintTextGame(Timeend- GetTimeGame())
-	if   target.HP / target.MaxHP * 100 < 20 or rDmg > target.HP
+	if GetTimeGame() - self.RLastTick > 14.5 or target.HP / target.MaxHP * 100 < 20 or rDmg > target.HP
 	or TotalDamage(target) >= target.HP then
 		CastSpellToPos(target.x, target.z, _R)
 	end
