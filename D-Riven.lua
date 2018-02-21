@@ -282,6 +282,7 @@ function Riven:OnAnimation(unit, animationName)
 			end
 		end
 function Riven:Reset()
+	 --DelayAction(function() MoveToPos(GetMousePos().x, GetMousePos().z) end, 0.24 + GetPing())
 			MoveToPos(GetMousePos().x, GetMousePos().z)
 			self.JustReset = GetTimeGame()
 	end
@@ -526,7 +527,7 @@ function TotalDamage(target)
 		totaldamage = totaldamage + GetDamage("R", target)
 	end
 	if GetDistance(target, myHero) < 1000  then
-		totaldamage = totaldamage + GetAADamageHitEnemy(target) * 3
+		totaldamage = totaldamage + GetAADamageHitEnemy(target) * 4
 	end
 	if target.HasBuff("Moredkaiser") then
 			totaldamage = totaldamage - target.MP
@@ -555,13 +556,13 @@ function Riven:CastQ(target)
 	local TargetQ = GetTargetSelector(1500, 0)
 	targetQ = GetAIHero(TargetQ)
 	if  not IsDead(targetQ)  and  GetDistance(targetQ, myHero) < self.Q.range + GetTrueAttackRange() then
-		if (self.Qstucks ==1 or self.Qstucks ==2) and self.autoattack and self.NowuseQ and GetTimeGame() - self.lastQ > 0.5 then
+		if (self.Qstucks ==1 or self.Qstucks ==2)and  self.autoattack and self.NowuseQ and GetTimeGame() - self.lastQ > 0.52 + GetPing()/2 then
 				CastSpellTarget(targetQ.Addr, _Q)
-				self.autoattack= false
+				--self.autoattack= false
 			end
-			if (self.Qstucks ==0 or self.Qstucks ==3)  then
-				CastSpellTarget(targetQ.Addr, _Q)
-				self.autoattack= false
+			if self.autoattack and self.NowuseQ and (self.Qstucks ==0 or self.Qstucks ==3)  then
+			CastSpellTarget(targetQ.Addr, _Q)
+				--self.autoattack= false
 			end
 		end
 end
@@ -577,6 +578,9 @@ function Riven:CastW()
 				CastSpellTarget(myHero.Addr, _W)
 			end
 			if myHero.HasBuff("RivenFeint") then
+				CastSpellTarget(myHero.Addr, _W)
+			end
+			if not CanCast(_E) then
 				CastSpellTarget(myHero.Addr, _W)
 			end
 		end
